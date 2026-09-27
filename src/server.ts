@@ -1,14 +1,17 @@
-import express from "express";
+import app from "./app";
+import { env } from "./config/env";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("Hello World from DevBoard Backend");
+const server = app.listen(env.PORT, () => {
+  console.log(`Server running in ${env.NODE_ENV} mode on port ${env.PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+const handleShutdown = (signal: string) => {
+  console.log(`Received ${signal}. Shutting down gracefully...`);
+  server.close(() => {
+    console.log("Server closed");
+    process.exit(0);
+  });
+};
+
+process.on("SIGINT", () => handleShutdown("SIGINT"));
+process.on("SIGTERM", () => handleShutdown("SIGTERM"));
