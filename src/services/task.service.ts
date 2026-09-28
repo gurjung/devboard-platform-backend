@@ -4,6 +4,7 @@ import { AppError } from "../utils/appError";
 import {
   CreateTaskInput,
   GetTasksQuery,
+  GetMyTasksQuery,
   UpdateTaskInput,
 } from "../schemas/task.schema";
 
@@ -248,3 +249,76 @@ export const deleteTask = async (
 
   return { success: true, message: "Task deleted successfully" };
 };
+
+export const getMyTasks = async (
+  workspaceId: string,
+  userId: string,
+  query: GetMyTasksQuery
+) => {
+  const where: Prisma.TaskWhereInput = {
+    project: { workspaceId },
+    assigneeId: userId,
+  };
+
+  if (query.status) {
+    where.status = query.status;
+  }
+
+  if (query.priority) {
+    where.priority = query.priority;
+  }
+
+  if (query.dueDate) {
+    const targetDate = new Date(query.dueDate);
+    if (!isNaN(targetDate.getTime())) {
+      const endOfDay = new Date(targetDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+      where.dueDate = { lte: endOfDay };
+    }
+  }
+
+  if (query.overdue === "true") {
+    where.dueDate = { lt: new Date() };
+    where.status = { not: TaskStatus.DONE };
+  }
+
+  const limit = query.pageSize ?? 20;
+  const cursor = query.cursor;
+
+  const [tasks, totalCount] = await Promise.all([
+    prisma.task.findMany({
+      where,
+      take: limit + 1,
+      cursor: cursor ? { id: cursor } : undefined,
+      skip: cursor ? 1 : 0,
+      orderBy: [
+        { createdAt: "desc" },
+        { id: "desc" },
+      ],
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        assignee: { select: safeUserSelect },
+        createdBy: { select: safeUserSelect },
+      },
+    }),
+    prisma.task.count({ where }),
+  ]);
+
+  const hasMore = tasks.length > limit;
+  const items = hasMore ? tasks.slice(0, limit) : tasks;
+  const nextCursor = hasMore && items.length > 0 ? items[items.length - 1].id : null;
+
+  return {
+    tasks: items,
+    nextCursor,
+    hasMore,
+    totalCount,
+  };
+};
+

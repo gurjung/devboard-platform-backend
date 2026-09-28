@@ -38,6 +38,16 @@ export const getTasksQuerySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).optional().default(20),
 });
 
+export const getMyTasksQuerySchema = z.object({
+  status: z.nativeEnum(TaskStatus).optional(),
+  priority: z.nativeEnum(TaskPriority).optional(),
+  dueDate: z.string().optional(),
+  overdue: z.enum(["true", "false"]).optional(),
+  cursor: z.string().optional(),
+  pageSize: z.coerce.number().int().min(1).max(100).optional().default(20),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;
+export type GetMyTasksQuery = z.infer<typeof getMyTasksQuerySchema>;

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as workspaceController from "../controllers/workspace.controller";
+import * as taskController from "../controllers/task.controller";
 import { memberRouter } from "./member.routes";
 import { workspaceInviteRouter } from "./workspaceInvite.routes";
 import { projectRouter } from "./project.routes";
@@ -40,6 +41,18 @@ workspaceRouter.delete(
   "/:workspaceId",
   requireWorkspaceRole("OWNER"),
   workspaceController.deleteWorkspace
+);
+
+workspaceRouter.get(
+  "/:workspaceId/my-tasks",
+  requireWorkspaceRole("MEMBER"),
+  taskController.getMyTasks
+);
+
+workspaceRouter.get(
+  "/:workspaceId/stats",
+  requireWorkspaceRole("MEMBER"),
+  workspaceController.getWorkspaceStats
 );
 
 workspaceRouter.use("/:workspaceId/members", memberRouter);
