@@ -6,5 +6,7 @@ model User {
   createdAt     DateTime       @default(now())
   refreshTokens RefreshToken[]
   memberships   WorkspaceMember[]
+  invitesSent   WorkspaceInvite[]
 }
+
 
