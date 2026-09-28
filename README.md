@@ -85,4 +85,23 @@ npm start
 | `POST` | `/auth/logout`   | Public/Idempotent | Revokes refresh token in database and clears the `refreshToken` cookie                        |
 | `GET`  | `/auth/me`       | Bearer Token      | Returns sanitized profile (`id`, `name`, `email`, `createdAt`) of logged-in user              |
 
+### Workspaces (`/workspaces`)
+
+| Method   | Route                       | Auth / Min Role | Description                                                               |
+| -------- | --------------------------- | --------------- | ------------------------------------------------------------------------- |
+| `POST`   | `/workspaces`               | Bearer Token    | Creates a new workspace with unique slug; auto-assigns creator as `OWNER` |
+| `GET`    | `/workspaces`               | Bearer Token    | Lists all workspaces where the authenticated user is a member             |
+| `GET`    | `/workspaces/:workspaceId`  | `MEMBER`        | Retrieves details and member role for a specific workspace                |
+| `PATCH`  | `/workspaces/:workspaceId`  | `ADMIN`         | Updates workspace name or logo                                            |
+| `DELETE` | `/workspaces/:workspaceId`  | `OWNER`         | Deletes workspace and cascade-deletes member associations                 |
+
+### Workspace Members (`/workspaces/:workspaceId/members`)
+
+| Method   | Route                                        | Auth / Min Role  | Description                                                         |
+| -------- | -------------------------------------------- | ---------------- | ------------------------------------------------------------------- |
+| `GET`    | `/workspaces/:workspaceId/members`           | `MEMBER`         | Lists all workspace members with user profiles                      |
+| `PATCH`  | `/workspaces/:workspaceId/members/:memberId` | `ADMIN`          | Updates member role (`ADMIN` or `MEMBER`); protects owner role      |
+| `DELETE` | `/workspaces/:workspaceId/members/:memberId` | `MEMBER`/`ADMIN` | Self-leave or member removal; prevents owner from leaving/removal   |
+
 ---
+

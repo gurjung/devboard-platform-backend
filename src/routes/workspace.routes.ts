@@ -1,6 +1,8 @@
 import { Router } from "express";
 import * as workspaceController from "../controllers/workspace.controller";
+import { memberRouter } from "./member.routes";
 import { authenticate } from "../middlewares/authenticate";
+import { requireWorkspaceRole } from "../middlewares/requireWorkspaceRole";
 import { validate } from "../middlewares/validate";
 import {
   createWorkspaceSchema,
@@ -19,12 +21,24 @@ workspaceRouter.post(
 
 workspaceRouter.get("/", workspaceController.getWorkspaces);
 
-workspaceRouter.get("/:workspaceId", workspaceController.getWorkspaceById);
+workspaceRouter.get(
+  "/:workspaceId",
+  requireWorkspaceRole("MEMBER"),
+  workspaceController.getWorkspaceById
+);
 
 workspaceRouter.patch(
   "/:workspaceId",
+  requireWorkspaceRole("ADMIN"),
   validate(updateWorkspaceSchema),
   workspaceController.updateWorkspace
 );
 
-workspaceRouter.delete("/:workspaceId", workspaceController.deleteWorkspace);
+workspaceRouter.delete(
+  "/:workspaceId",
+  requireWorkspaceRole("OWNER"),
+  workspaceController.deleteWorkspace
+);
+
+workspaceRouter.use("/:workspaceId/members", memberRouter);
+
