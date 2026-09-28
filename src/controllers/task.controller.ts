@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as taskService from "../services/task.service";
-import { getTasksQuerySchema } from "../schemas/task.schema";
+import {
+  getMyTasksQuerySchema,
+  getTasksQuerySchema,
+} from "../schemas/task.schema";
 import { AppError } from "../utils/appError";
 
 export const createTask = async (
@@ -147,3 +150,36 @@ export const deleteTask = async (
     next(error);
   }
 };
+
+export const getMyTasks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const workspaceId = req.params.workspaceId as string;
+    const userId = req.user!.userId;
+
+    const parsedQuery = getMyTasksQuerySchema.safeParse(req.query);
+    if (!parsedQuery.success) {
+      const firstError =
+        parsedQuery.error.issues[0]?.message || "Invalid query parameters";
+      return next(new AppError(firstError, 400));
+    }
+
+    const result = await taskService.getMyTasks(
+      workspaceId,
+      userId,
+      parsedQuery.data
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "My tasks retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

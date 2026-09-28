@@ -93,7 +93,9 @@ npm start
 | `GET`    | `/workspaces`               | Bearer Token    | Lists all workspaces where the authenticated user is a member             |
 | `GET`    | `/workspaces/:workspaceId`  | `MEMBER`        | Retrieves details and member role for a specific workspace                |
 | `PATCH`  | `/workspaces/:workspaceId`  | `ADMIN`         | Updates workspace name or logo                                            |
-| `DELETE` | `/workspaces/:workspaceId`  | `OWNER`         | Deletes workspace and cascade-deletes member associations                 |
+| `DELETE` | `/workspaces/:workspaceId`          | `OWNER`         | Deletes workspace and cascade-deletes member associations                                  |
+| `GET`    | `/workspaces/:workspaceId/my-tasks` | `MEMBER`        | Aggregates all tasks assigned to current user across all projects with cursor pagination  |
+| `GET`    | `/workspaces/:workspaceId/stats`    | `MEMBER`        | Aggregated metrics (project/task/member counts, overdue, completed, and recent tasks)      |
 
 ### Workspace Members (`/workspaces/:workspaceId/members`)
 

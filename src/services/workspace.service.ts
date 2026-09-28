@@ -153,3 +153,92 @@ export const deleteWorkspace = async (
     where: { id: workspaceId },
   });
 };
+
+export const getWorkspaceStats = async (
+  workspaceId: string,
+  userId: string
+) => {
+  const safeUserSelect = {
+    id: true,
+    name: true,
+    email: true,
+  };
+
+  const now = new Date();
+
+  const [
+    totalProjects,
+    totalTasks,
+    assignedTasks,
+    completedTasks,
+    overdueTasks,
+    totalMembers,
+    recentTasks,
+    projects,
+  ] = await Promise.all([
+    prisma.project.count({
+      where: { workspaceId },
+    }),
+    prisma.task.count({
+      where: { project: { workspaceId } },
+    }),
+    prisma.task.count({
+      where: { project: { workspaceId }, assigneeId: userId },
+    }),
+    prisma.task.count({
+      where: { project: { workspaceId }, status: "DONE" },
+    }),
+    prisma.task.count({
+      where: {
+        project: { workspaceId },
+        dueDate: { lt: now },
+        status: { not: "DONE" },
+      },
+    }),
+    prisma.workspaceMember.count({
+      where: { workspaceId },
+    }),
+    prisma.task.findMany({
+      where: { project: { workspaceId } },
+      take: 5,
+      orderBy: { updatedAt: "desc" },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        assignee: { select: safeUserSelect },
+        createdBy: { select: safeUserSelect },
+      },
+    }),
+    prisma.project.findMany({
+      where: { workspaceId },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        _count: {
+          select: { tasks: true },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+
+  return {
+    counts: {
+      totalProjects,
+      totalTasks,
+      assignedTasks,
+      completedTasks,
+      overdueTasks,
+      totalMembers,
+    },
+    recentTasks,
+    projects,
+  };
+};
+

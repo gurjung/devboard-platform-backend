@@ -108,3 +108,25 @@ export const deleteWorkspace = async (
   }
 };
 
+export const getWorkspaceStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const workspaceId = req.params.workspaceId as string;
+    const userId = req.user!.userId;
+
+    const stats = await workspaceService.getWorkspaceStats(workspaceId, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Workspace stats retrieved successfully",
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
