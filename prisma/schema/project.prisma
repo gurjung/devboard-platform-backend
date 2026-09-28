@@ -10,6 +10,7 @@ model Project {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  tasks       Task[]
 
   @@unique([workspaceId, slug])
   @@index([workspaceId])
