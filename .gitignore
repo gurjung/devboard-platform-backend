@@ -10,4 +10,5 @@ yarn-error.log*
 coverage/
 PROJECT_CONTEXT.md
 FEATURE_ROADMAP.md
-docs
+/docs/
+technical_docs/

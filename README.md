@@ -67,6 +67,20 @@ npm start
 
 ---
 
+## Interactive API Documentation (Swagger UI)
+
+DevBoard features a comprehensive OpenAPI 3.0 specification and interactive Swagger UI developer portal for seamless frontend integration and API exploration:
+
+- **Swagger UI:** [`http://localhost:5001/api-docs`](http://localhost:5001/api-docs) (Interactive dashboard with Bearer JWT authorization)
+- **OpenAPI 3.0 Spec JSON:** [`http://localhost:5001/api-docs/json`](http://localhost:5001/api-docs/json) (Raw JSON for automated client & TypeScript type generation)
+
+| Method | Route            | Auth   | Description                             |
+| ------ | ---------------- | ------ | --------------------------------------- |
+| `GET`  | `/api-docs`      | Public | Interactive Swagger UI developer portal |
+| `GET`  | `/api-docs/json` | Public | Raw OpenAPI 3.0 specification JSON      |
+
+---
+
 ## API Endpoints (Current Implementation)
 
 ### System Health
