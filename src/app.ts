@@ -6,6 +6,7 @@ import { healthRouter } from "./routes/health.routes";
 import { authRouter } from "./routes/auth.routes";
 import { workspaceRouter } from "./routes/workspace.routes";
 import { inviteRouter } from "./routes/invite.routes";
+import { docsRouter } from "./routes/docs.routes";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+app.use("/api-docs", docsRouter);
 app.use("/health", healthRouter);
 app.use("/auth", authRouter);
 app.use("/workspaces", workspaceRouter);
