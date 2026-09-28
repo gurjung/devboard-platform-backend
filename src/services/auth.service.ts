@@ -151,3 +151,43 @@ export const rotateRefreshToken = async (rawToken: string) => {
   };
 };
 
+export const logoutUser = async (rawToken?: string) => {
+  if (!rawToken) {
+    return;
+  }
+
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  await prisma.refreshToken.updateMany({
+    where: {
+      tokenHash,
+      revokedAt: null,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
+};
+
+export const getCurrentUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  return user;
+};
+
+

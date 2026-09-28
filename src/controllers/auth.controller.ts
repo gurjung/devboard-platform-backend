@@ -84,3 +84,42 @@ export const refresh = async (
   }
 };
 
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const rawRefreshToken = req.cookies.refreshToken;
+    await authService.logoutUser(rawRefreshToken);
+
+    res.clearCookie("refreshToken", cookieOptions);
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await authService.getCurrentUser(req.user!.userId);
+
+    res.status(200).json({
+      success: true,
+      message: "User profile retrieved successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
