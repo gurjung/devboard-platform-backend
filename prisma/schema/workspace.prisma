@@ -11,6 +11,7 @@ model Workspace {
   logo      String?
   members   WorkspaceMember[]
   invites   WorkspaceInvite[]
+  projects  Project[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 }

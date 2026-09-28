@@ -118,6 +118,16 @@ npm start
 | `GET`  | `/invites/:token`       | Public       | Previews invitation details (workspace name, inviter, role) without auth     |
 | `POST` | `/invites/:token/accept`| Bearer Token | Accepts invitation, verifies email match, and atomically adds user as member |
 
+### Projects (`/workspaces/:workspaceId/projects`)
+
+| Method   | Route                                          | Auth / Min Role | Description                                                           |
+| -------- | ---------------------------------------------- | --------------- | --------------------------------------------------------------------- |
+| `POST`   | `/workspaces/:workspaceId/projects`            | `ADMIN`         | Creates a project within workspace with auto-generated scoped slug   |
+| `GET`    | `/workspaces/:workspaceId/projects`            | `MEMBER`        | Lists all projects belonging to the workspace                         |
+| `GET`    | `/workspaces/:workspaceId/projects/:projectId` | `MEMBER`        | Retrieves single project details within the workspace                 |
+| `PATCH`  | `/workspaces/:workspaceId/projects/:projectId` | `ADMIN`         | Updates project name, description, or status (slug remains immutable) |
+| `DELETE` | `/workspaces/:workspaceId/projects/:projectId` | `ADMIN`         | Permanently deletes project from workspace                            |
+
 ---
 
 

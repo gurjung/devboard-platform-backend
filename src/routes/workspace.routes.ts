@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as workspaceController from "../controllers/workspace.controller";
 import { memberRouter } from "./member.routes";
 import { workspaceInviteRouter } from "./workspaceInvite.routes";
+import { projectRouter } from "./project.routes";
 import { authenticate } from "../middlewares/authenticate";
 import { requireWorkspaceRole } from "../middlewares/requireWorkspaceRole";
 import { validate } from "../middlewares/validate";
@@ -43,5 +44,7 @@ workspaceRouter.delete(
 
 workspaceRouter.use("/:workspaceId/members", memberRouter);
 workspaceRouter.use("/:workspaceId/invites", workspaceInviteRouter);
+workspaceRouter.use("/:workspaceId/projects", projectRouter);
+
 
 
