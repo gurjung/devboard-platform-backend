@@ -1,38 +1,88 @@
 # DevBoard Backend
 
-Standalone REST API backend for the DevBoard workspace and project management platform.
+Standalone REST API backend for DevBoard — a modern workspace, project, and task management platform.
 
-## Tech Stack
-- **Runtime:** Node.js
-- **Framework:** Express
-- **Language:** TypeScript
-- **Database:** PostgreSQL
-- **ORM:** Prisma
+Built with Node.js, Express, TypeScript, Prisma ORM, and PostgreSQL (Supabase).
+
+---
+
+## Tech Stack & Architecture
+
+- **Runtime & Framework:** Node.js, Express 4.x
+- **Language:** TypeScript (strict mode, `NodeNext` module resolution)
+- **Database & ORM:** PostgreSQL (Supabase Connection Pooler) + Prisma 6 (multi-file schema)
+- **Authentication:** JWT Access Tokens (15-min TTL) + Secure HTTP-only Refresh Tokens (7-day TTL)
+- **Security:** Refresh Token Rotation (RTR), Replay/Theft Detection, Bcrypt (10 rounds), SHA-256 token hashing, CORS, Cookie-Parser
+- **Validation:** Zod schema validation middleware
+
+---
 
 ## Getting Started
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- PostgreSQL instance
+### 1. Prerequisites
 
-### Installation
+- Node.js (`v18+`, tested on `v25`)
+- PostgreSQL instance (e.g. Supabase)
+
+### 2. Installation
+
 ```bash
 npm install
 ```
 
-### Environment Setup
-Copy `.env.example` to `.env` and fill in the required values:
+### 3. Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
 ```bash
 cp .env.example .env
 ```
 
-### Development
+Key environment variables:
+
+- `PORT` — Server port (default: `5001` to avoid macOS AirPlay conflict on 5000)
+- `DATABASE_URL` — Supabase transaction pooler connection string (port 6543)
+- `DIRECT_URL` — Supabase direct connection string (port 5432)
+- `JWT_ACCESS_SECRET` — Secret key for signing 15-minute access tokens
+- `CORS_ORIGIN` — Frontend origin (e.g. `http://localhost:3000`)
+
+### 4. Database Setup
+
+Push schema models to PostgreSQL:
+
 ```bash
-npm run dev
+npx prisma db push
 ```
 
-### Build
+### 5. Running the Application
+
 ```bash
+# Development mode with hot-reloading
+npm run dev
+
+# Production build and run
 npm run build
 npm start
 ```
+
+---
+
+## API Endpoints (Current Implementation)
+
+### System Health
+
+| Method | Route     | Auth   | Description                                 |
+| ------ | --------- | ------ | ------------------------------------------- |
+| `GET`  | `/health` | Public | System uptime, timestamp, and health status |
+
+### Authentication (`/auth`)
+
+| Method | Route            | Auth              | Description                                                                                   |
+| ------ | ---------------- | ----------------- | --------------------------------------------------------------------------------------------- |
+| `POST` | `/auth/register` | Public            | Registers a new user with bcrypt-hashed password (10 salt rounds)                             |
+| `POST` | `/auth/login`    | Public            | Validates credentials; returns 15-min JWT access token + sets 7-day `httpOnly` refresh cookie |
+| `POST` | `/auth/refresh`  | Cookie            | Single-use token rotation; detects reuse/theft (revokes all sessions on replay)               |
+| `POST` | `/auth/logout`   | Public/Idempotent | Revokes refresh token in database and clears the `refreshToken` cookie                        |
+| `GET`  | `/auth/me`       | Bearer Token      | Returns sanitized profile (`id`, `name`, `email`, `createdAt`) of logged-in user              |
+
+---
