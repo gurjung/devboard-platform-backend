@@ -11,6 +11,14 @@ export const openapiSpec = {
   },
   servers: [
     {
+      url: "/",
+      description: "Current Server (Auto-detected)",
+    },
+    {
+      url: "https://devboard-platform-backend.onrender.com",
+      description: "Production Server (Render)",
+    },
+    {
       url: "http://localhost:5001",
       description: "Local Development Server",
     },
