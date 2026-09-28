@@ -9,12 +9,7 @@ export const authRouter = Router();
 authRouter.post("/register", validate(registerSchema), authController.register);
 authRouter.post("/login", validate(loginSchema), authController.login);
 authRouter.post("/refresh", authController.refresh);
+authRouter.post("/logout", authController.logout);
+authRouter.get("/me", authenticate, authController.getMe);
 
-authRouter.get("/test", authenticate, (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Protected route accessed successfully",
-    user: req.user,
-  });
-});
 
