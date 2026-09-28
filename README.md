@@ -46,13 +46,25 @@ Key environment variables:
 - `JWT_ACCESS_SECRET` — Secret key for signing 15-minute access tokens
 - `CORS_ORIGIN` — Frontend origin (e.g. `http://localhost:3000`)
 
-### 4. Database Setup
+### 4. Database Setup & Seeding
 
 Push schema models to PostgreSQL:
 
 ```bash
 npx prisma db push
 ```
+
+Seed realistic demo environment (users, workspace, projects, and tasks):
+
+```bash
+npx prisma db seed
+```
+
+**Demo Credentials (all share password: `Password123!`):**
+- **Owner:** `owner@devboard.com`
+- **Admin:** `sarah.lead@devboard.com`
+- **Member:** `alex.dev@devboard.com`
+- **Demo Workspace:** "DevBoard HQ" (slug: `devboard-hq`)
 
 ### 5. Running the Application
 
