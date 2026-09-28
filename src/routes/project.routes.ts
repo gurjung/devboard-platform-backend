@@ -6,6 +6,7 @@ import {
   createProjectSchema,
   updateProjectSchema,
 } from "../schemas/project.schema";
+import { taskRouter } from "./task.routes";
 
 export const projectRouter = Router({ mergeParams: true });
 
@@ -34,3 +35,5 @@ projectRouter.delete(
   requireWorkspaceRole("ADMIN"),
   projectController.deleteProject
 );
+
+projectRouter.use("/:projectId/tasks", taskRouter);

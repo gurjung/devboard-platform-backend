@@ -128,6 +128,16 @@ npm start
 | `PATCH`  | `/workspaces/:workspaceId/projects/:projectId` | `ADMIN`         | Updates project name, description, or status (slug remains immutable) |
 | `DELETE` | `/workspaces/:workspaceId/projects/:projectId` | `ADMIN`         | Permanently deletes project from workspace                            |
 
+### Tasks (`/workspaces/:workspaceId/projects/:projectId/tasks`)
+
+| Method   | Route                                                   | Auth / Allowed Actors           | Description                                                                              |
+| -------- | ------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
+| `POST`   | `/workspaces/:workspaceId/projects/:projectId/tasks`    | Workspace `MEMBER`              | Creates a task; validates that `assigneeId` is a member of the workspace                 |
+| `GET`    | `/workspaces/:workspaceId/projects/:projectId/tasks`    | Workspace `MEMBER`              | Cursor-paginated task list with filters (`status`, `priority`, `assigneeId`, `overdue`)   |
+| `GET`    | `/workspaces/:workspaceId/projects/:projectId/tasks/:id`| Workspace `MEMBER`              | Retrieves task details with joined safe assignee and creator profiles                    |
+| `PATCH`  | `/workspaces/:workspaceId/projects/:projectId/tasks/:id`| Creator / Assignee / `ADMIN`    | Updates task fields; regular members can only update tasks they created or are assigned to|
+| `DELETE` | `/workspaces/:workspaceId/projects/:projectId/tasks/:id`| Creator / `ADMIN` / `OWNER`     | Deletes a task; assignees who did not create the task are strictly forbidden (`403`)     |
+
 ---
 
 
