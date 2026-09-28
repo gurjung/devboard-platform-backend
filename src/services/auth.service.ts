@@ -84,3 +84,70 @@ export const loginUser = async (input: LoginInput) => {
     rawRefreshToken,
   };
 };
+
+export const rotateRefreshToken = async (rawToken: string) => {
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: { tokenHash },
+    include: { user: true },
+  });
+
+  if (!storedToken) {
+    throw new AppError("Invalid refresh token", 401);
+  }
+
+  if (storedToken.revokedAt) {
+    await prisma.refreshToken.updateMany({
+      where: {
+        userId: storedToken.userId,
+        revokedAt: null,
+      },
+      data: {
+        revokedAt: new Date(),
+      },
+    });
+
+    throw new AppError("Session invalidated due to suspicious activity", 403);
+  }
+
+  if (storedToken.expiresAt < new Date()) {
+    throw new AppError("Refresh token has expired", 401);
+  }
+
+  const newRawRefreshToken = crypto.randomBytes(40).toString("hex");
+  const newTokenHash = crypto
+    .createHash("sha256")
+    .update(newRawRefreshToken)
+    .digest("hex");
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  await prisma.$transaction([
+    prisma.refreshToken.update({
+      where: { id: storedToken.id },
+      data: { revokedAt: new Date() },
+    }),
+    prisma.refreshToken.create({
+      data: {
+        tokenHash: newTokenHash,
+        userId: storedToken.userId,
+        expiresAt,
+      },
+    }),
+  ]);
+
+  const accessToken = jwt.sign(
+    { userId: storedToken.user.id, email: storedToken.user.email },
+    env.JWT_ACCESS_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  return {
+    accessToken,
+    newRawRefreshToken,
+  };
+};
+
