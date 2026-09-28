@@ -5,6 +5,7 @@ import { env } from "./config/env";
 import { healthRouter } from "./routes/health.routes";
 import { authRouter } from "./routes/auth.routes";
 import { workspaceRouter } from "./routes/workspace.routes";
+import { inviteRouter } from "./routes/invite.routes";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -21,9 +22,11 @@ app.use(cookieParser());
 app.use("/health", healthRouter);
 app.use("/auth", authRouter);
 app.use("/workspaces", workspaceRouter);
+app.use("/invites", inviteRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
+
 
 
 export default app;

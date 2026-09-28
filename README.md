@@ -103,5 +103,21 @@ npm start
 | `PATCH`  | `/workspaces/:workspaceId/members/:memberId` | `ADMIN`          | Updates member role (`ADMIN` or `MEMBER`); protects owner role      |
 | `DELETE` | `/workspaces/:workspaceId/members/:memberId` | `MEMBER`/`ADMIN` | Self-leave or member removal; prevents owner from leaving/removal   |
 
+### Workspace Invites (`/workspaces/:workspaceId/invites`)
+
+| Method   | Route                                        | Auth / Min Role | Description                                                         |
+| -------- | -------------------------------------------- | --------------- | ------------------------------------------------------------------- |
+| `POST`   | `/workspaces/:workspaceId/invites`           | `ADMIN`         | Generates a 7-day cryptographic invite link for an email address     |
+| `GET`    | `/workspaces/:workspaceId/invites`           | `ADMIN`         | Lists all pending invitations for the workspace                     |
+| `DELETE` | `/workspaces/:workspaceId/invites/:inviteId` | `ADMIN`         | Revokes/cancels a pending workspace invitation                      |
+
+### Invitations (`/invites`)
+
+| Method | Route                   | Auth         | Description                                                                  |
+| ------ | ----------------------- | ------------ | ---------------------------------------------------------------------------- |
+| `GET`  | `/invites/:token`       | Public       | Previews invitation details (workspace name, inviter, role) without auth     |
+| `POST` | `/invites/:token/accept`| Bearer Token | Accepts invitation, verifies email match, and atomically adds user as member |
+
 ---
+
 
