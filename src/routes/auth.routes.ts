@@ -8,6 +8,7 @@ export const authRouter = Router();
 
 authRouter.post("/register", validate(registerSchema), authController.register);
 authRouter.post("/login", validate(loginSchema), authController.login);
+authRouter.post("/refresh", authController.refresh);
 
 authRouter.get("/test", authenticate, (req, res) => {
   res.status(200).json({
@@ -16,3 +17,4 @@ authRouter.get("/test", authenticate, (req, res) => {
     user: req.user,
   });
 });
+
