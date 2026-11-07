@@ -31,6 +31,14 @@ export const getIO = () => {
 };
 
 export const socketService = {
+  // Notifications (User-targeted)
+  emitNotification: (userId: string, notification: any) => {
+    if (!ioInstance) return;
+    ioInstance.to(`user:${userId}`).emit("notification:new", {
+      notification,
+    });
+  },
+
   // Tasks
   emitTaskCreated: (projectId: string, task: any, actorId: string) => {
     if (!ioInstance) return;

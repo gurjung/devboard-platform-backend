@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as taskService from "../services/task.service";
+import * as notificationService from "../services/notification.service";
 import {
   getMyTasksQuerySchema,
   getTasksQuerySchema,
@@ -27,11 +28,21 @@ export const createTask = async (
     // Broadcast real-time task creation to project room
     socketService.emitTaskCreated(projectId, task, userId);
 
-    // If assigned to another user, send direct assignment notification
+    // If assigned to another user, persist notification and send direct alert
     if (task.assigneeId && task.assigneeId !== userId) {
       socketService.emitTaskAssigned(task.assigneeId, task, {
         userId: req.user!.userId,
         email: req.user!.email,
+      });
+
+      await notificationService.createNotification({
+        userId: task.assigneeId,
+        workspaceId,
+        type: "TASK_ASSIGNED",
+        title: "Task Assigned",
+        message: `You were assigned to "${task.title}"`,
+        link: `/dashboard/${workspaceId}/projects/${projectId}?taskId=${task.id}`,
+        actorId: userId,
       });
     }
 
@@ -127,7 +138,7 @@ export const updateTask = async (
     // Broadcast real-time task update to project room
     socketService.emitTaskUpdated(projectId, updatedTask, userId);
 
-    // If assigned/reassigned to another user, send direct assignment notification
+    // If assigned/reassigned to another user, persist notification and send direct alert
     if (
       updatedTask.assigneeId &&
       updatedTask.assigneeId !== userId &&
@@ -137,6 +148,33 @@ export const updateTask = async (
       socketService.emitTaskAssigned(updatedTask.assigneeId, updatedTask, {
         userId: req.user!.userId,
         email: req.user!.email,
+      });
+
+      await notificationService.createNotification({
+        userId: updatedTask.assigneeId,
+        workspaceId,
+        type: "TASK_ASSIGNED",
+        title: "Task Assigned",
+        message: `You were assigned to "${updatedTask.title}"`,
+        link: `/dashboard/${workspaceId}/projects/${projectId}?taskId=${updatedTask.id}`,
+        actorId: userId,
+      });
+    }
+
+    // If status changed and assignee is someone else, notify them
+    if (
+      req.body.status &&
+      updatedTask.assigneeId &&
+      updatedTask.assigneeId !== userId
+    ) {
+      await notificationService.createNotification({
+        userId: updatedTask.assigneeId,
+        workspaceId,
+        type: "TASK_STATUS_CHANGED",
+        title: "Task Status Updated",
+        message: `"${updatedTask.title}" was moved to ${updatedTask.status}`,
+        link: `/dashboard/${workspaceId}/projects/${projectId}?taskId=${updatedTask.id}`,
+        actorId: userId,
       });
     }
 

@@ -6,6 +6,7 @@ import { healthRouter } from "./routes/health.routes";
 import { authRouter } from "./routes/auth.routes";
 import { workspaceRouter } from "./routes/workspace.routes";
 import { inviteRouter } from "./routes/invite.routes";
+import { notificationRouter } from "./routes/notification.routes";
 import { docsRouter } from "./routes/docs.routes";
 import helmet from "helmet";
 import { globalLimiter, authLimiter } from "./middlewares/rateLimiter";
@@ -33,10 +34,9 @@ app.use("/health", healthRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/workspaces", workspaceRouter);
 app.use("/invites", inviteRouter);
+app.use("/notifications", notificationRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
-
-
 
 export default app;

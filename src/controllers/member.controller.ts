@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as memberService from "../services/member.service";
+import * as notificationService from "../services/notification.service";
 import { socketService } from "../socket/socketService";
 
 export const getMembers = async (
@@ -40,6 +41,17 @@ export const updateRole = async (
 
     // Broadcast member role update to workspace
     socketService.emitMemberUpdated(workspaceId, updatedMember, req.user!.userId);
+
+    // Create persistent notification for affected member
+    await notificationService.createNotification({
+      userId: updatedMember.userId,
+      workspaceId,
+      type: "MEMBER_ROLE_UPDATED",
+      title: "Workspace Role Updated",
+      message: `Your role in this workspace was updated to ${role}`,
+      link: `/dashboard/${workspaceId}/members`,
+      actorId: req.user!.userId,
+    });
 
     res.status(200).json({
       success: true,
