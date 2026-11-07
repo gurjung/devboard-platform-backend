@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as projectService from "../services/project.service";
+import { socketService } from "../socket/socketService";
 
 export const createProject = async (
   req: Request,
@@ -13,6 +14,9 @@ export const createProject = async (
       req.user!.userId,
       req.body
     );
+
+    // Broadcast project creation to all workspace members
+    socketService.emitProjectCreated(workspaceId, project, req.user!.userId);
 
     res.status(201).json({
       success: true,
@@ -82,6 +86,9 @@ export const updateProject = async (
       req.body
     );
 
+    // Broadcast project update to workspace members
+    socketService.emitProjectUpdated(workspaceId, updatedProject, req.user!.userId);
+
     res.status(200).json({
       success: true,
       message: "Project updated successfully",
@@ -102,6 +109,9 @@ export const deleteProject = async (
     const projectId = req.params.projectId as string;
 
     await projectService.deleteProject(workspaceId, projectId);
+
+    // Broadcast project deletion to workspace members
+    socketService.emitProjectDeleted(workspaceId, projectId, req.user!.userId);
 
     res.status(200).json({
       success: true,

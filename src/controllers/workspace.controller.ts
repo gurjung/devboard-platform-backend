@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as workspaceService from "../services/workspace.service";
+import { socketService } from "../socket/socketService";
 
 export const createWorkspace = async (
   req: Request,
@@ -77,6 +78,9 @@ export const updateWorkspace = async (
       req.body
     );
 
+    // Broadcast workspace update to all members
+    socketService.emitWorkspaceUpdated(workspaceId, updatedWorkspace, req.user!.userId);
+
     res.status(200).json({
       success: true,
       message: "Workspace updated successfully",
@@ -98,6 +102,9 @@ export const deleteWorkspace = async (
       workspaceId,
       req.user!.userId
     );
+
+    // Broadcast workspace deletion to all members
+    socketService.emitWorkspaceDeleted(workspaceId, req.user!.userId);
 
     res.status(200).json({
       success: true,
@@ -128,5 +135,3 @@ export const getWorkspaceStats = async (
     next(error);
   }
 };
-
-

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as memberService from "../services/member.service";
+import { socketService } from "../socket/socketService";
 
 export const getMembers = async (
   req: Request,
@@ -37,6 +38,9 @@ export const updateRole = async (
       role
     );
 
+    // Broadcast member role update to workspace
+    socketService.emitMemberUpdated(workspaceId, updatedMember, req.user!.userId);
+
     res.status(200).json({
       success: true,
       message: "Member role updated successfully",
@@ -61,6 +65,9 @@ export const removeMember = async (
       memberId,
       req.workspaceMember!
     );
+
+    // Broadcast member removal to workspace
+    socketService.emitMemberRemoved(workspaceId, memberId, req.user!.userId);
 
     res.status(200).json({
       success: true,

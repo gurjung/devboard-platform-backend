@@ -31,6 +31,7 @@ export const getIO = () => {
 };
 
 export const socketService = {
+  // Tasks
   emitTaskCreated: (projectId: string, task: any, actorId: string) => {
     if (!ioInstance) return;
     ioInstance.to(`project:${projectId}`).emit("task:created", {
@@ -64,6 +65,65 @@ export const socketService = {
     ioInstance.to(`user:${assigneeId}`).emit("task:assigned", {
       task,
       assignedBy,
+    });
+  },
+
+  // Projects
+  emitProjectCreated: (workspaceId: string, project: any, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("project:created", {
+      project,
+      actorId,
+    });
+  },
+
+  emitProjectUpdated: (workspaceId: string, project: any, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("project:updated", {
+      project,
+      actorId,
+    });
+  },
+
+  emitProjectDeleted: (workspaceId: string, projectId: string, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("project:deleted", {
+      projectId,
+      actorId,
+    });
+  },
+
+  // Members
+  emitMemberUpdated: (workspaceId: string, member: any, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("member:updated", {
+      member,
+      actorId,
+    });
+  },
+
+  emitMemberRemoved: (workspaceId: string, memberId: string, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("member:removed", {
+      memberId,
+      actorId,
+    });
+  },
+
+  // Workspaces
+  emitWorkspaceUpdated: (workspaceId: string, workspace: any, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("workspace:updated", {
+      workspace,
+      actorId,
+    });
+  },
+
+  emitWorkspaceDeleted: (workspaceId: string, actorId: string) => {
+    if (!ioInstance) return;
+    ioInstance.to(`workspace:${workspaceId}`).emit("workspace:deleted", {
+      workspaceId,
+      actorId,
     });
   },
 };

@@ -23,6 +23,13 @@ export interface ServerToClientEvents {
     projectId: string;
     users: Array<{ userId: string; name: string; email: string }>;
   }) => void;
+  "project:created": (data: { project: any; actorId: string }) => void;
+  "project:updated": (data: { project: any; actorId: string }) => void;
+  "project:deleted": (data: { projectId: string; actorId: string }) => void;
+  "member:updated": (data: { member: any; actorId: string }) => void;
+  "member:removed": (data: { memberId: string; actorId: string }) => void;
+  "workspace:updated": (data: { workspace: any; actorId: string }) => void;
+  "workspace:deleted": (data: { workspaceId: string; actorId: string }) => void;
   error: (data: { message: string }) => void;
 }
 
