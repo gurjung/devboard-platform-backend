@@ -10,3 +10,4 @@ notificationRouter.get("/", notificationController.getNotifications);
 notificationRouter.patch("/read-all", notificationController.markAllAsRead);
 notificationRouter.patch("/:id/read", notificationController.markAsRead);
 notificationRouter.delete("/:id", notificationController.deleteNotification);
+

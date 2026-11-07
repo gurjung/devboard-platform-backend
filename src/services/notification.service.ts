@@ -126,3 +126,4 @@ export const deleteNotification = async (
 
   return { success: true };
 };
+

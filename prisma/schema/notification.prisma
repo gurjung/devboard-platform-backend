@@ -24,3 +24,4 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt])
 }
+

@@ -30,11 +30,6 @@ export const createTask = async (
 
     // If assigned to another user, persist notification and send direct alert
     if (task.assigneeId && task.assigneeId !== userId) {
-      socketService.emitTaskAssigned(task.assigneeId, task, {
-        userId: req.user!.userId,
-        email: req.user!.email,
-      });
-
       await notificationService.createNotification({
         userId: task.assigneeId,
         workspaceId,
@@ -145,11 +140,6 @@ export const updateTask = async (
       req.body.assigneeId !== undefined &&
       req.body.assigneeId === updatedTask.assigneeId
     ) {
-      socketService.emitTaskAssigned(updatedTask.assigneeId, updatedTask, {
-        userId: req.user!.userId,
-        email: req.user!.email,
-      });
-
       await notificationService.createNotification({
         userId: updatedTask.assigneeId,
         workspaceId,
