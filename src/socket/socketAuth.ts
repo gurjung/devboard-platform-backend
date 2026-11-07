@@ -55,3 +55,4 @@ export const socketAuthMiddleware = async (
     next(new Error("Authentication error: Invalid or expired token"));
   }
 };
+

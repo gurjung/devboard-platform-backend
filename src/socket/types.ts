@@ -15,6 +15,10 @@ export interface ServerToClientEvents {
   "task:created": (data: { task: any; actorId: string }) => void;
   "task:updated": (data: { task: any; actorId: string }) => void;
   "task:deleted": (data: { taskId: string; actorId: string }) => void;
+  "task:assigned": (data: {
+    task: any;
+    assignedBy: { userId: string; email: string };
+  }) => void;
   "project:presence": (data: {
     projectId: string;
     users: Array<{ userId: string; name: string; email: string }>;

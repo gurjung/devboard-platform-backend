@@ -27,6 +27,14 @@ export const createTask = async (
     // Broadcast real-time task creation to project room
     socketService.emitTaskCreated(projectId, task, userId);
 
+    // If assigned to another user, send direct assignment notification
+    if (task.assigneeId && task.assigneeId !== userId) {
+      socketService.emitTaskAssigned(task.assigneeId, task, {
+        userId: req.user!.userId,
+        email: req.user!.email,
+      });
+    }
+
     res.status(201).json({
       success: true,
       message: "Task created successfully",
@@ -118,6 +126,19 @@ export const updateTask = async (
 
     // Broadcast real-time task update to project room
     socketService.emitTaskUpdated(projectId, updatedTask, userId);
+
+    // If assigned/reassigned to another user, send direct assignment notification
+    if (
+      updatedTask.assigneeId &&
+      updatedTask.assigneeId !== userId &&
+      req.body.assigneeId !== undefined &&
+      req.body.assigneeId === updatedTask.assigneeId
+    ) {
+      socketService.emitTaskAssigned(updatedTask.assigneeId, updatedTask, {
+        userId: req.user!.userId,
+        email: req.user!.email,
+      });
+    }
 
     res.status(200).json({
       success: true,

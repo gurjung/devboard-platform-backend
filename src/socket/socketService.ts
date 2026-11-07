@@ -54,4 +54,16 @@ export const socketService = {
       actorId,
     });
   },
+
+  emitTaskAssigned: (
+    assigneeId: string,
+    task: any,
+    assignedBy: { userId: string; email: string }
+  ) => {
+    if (!ioInstance) return;
+    ioInstance.to(`user:${assigneeId}`).emit("task:assigned", {
+      task,
+      assignedBy,
+    });
+  },
 };
