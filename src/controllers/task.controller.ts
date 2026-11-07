@@ -5,6 +5,7 @@ import {
   getTasksQuerySchema,
 } from "../schemas/task.schema";
 import { AppError } from "../utils/appError";
+import { socketService } from "../socket/socketService";
 
 export const createTask = async (
   req: Request,
@@ -22,6 +23,9 @@ export const createTask = async (
       userId,
       req.body
     );
+
+    // Broadcast real-time task creation to project room
+    socketService.emitTaskCreated(projectId, task, userId);
 
     res.status(201).json({
       success: true,
@@ -112,6 +116,9 @@ export const updateTask = async (
       req.body
     );
 
+    // Broadcast real-time task update to project room
+    socketService.emitTaskUpdated(projectId, updatedTask, userId);
+
     res.status(200).json({
       success: true,
       message: "Task updated successfully",
@@ -141,6 +148,9 @@ export const deleteTask = async (
       userId,
       userRole
     );
+
+    // Broadcast real-time task deletion to project room
+    socketService.emitTaskDeleted(projectId, taskId, userId);
 
     res.status(200).json({
       success: true,
@@ -182,4 +192,3 @@ export const getMyTasks = async (
     next(error);
   }
 };
-
